@@ -11,6 +11,9 @@ import { workflowReadinessRules } from './rules/workflow-readiness.js';
 
 export * from './types.js';
 export { collectProjectContext } from './collector.js';
+export { runFix } from './fixer.js';
+export { fixFilesystemIssues } from './fixers/filesystem-fixer.js';
+export { fixWorkflowLabels } from './fixers/workflow-fixer.js';
 export { ruleAgentDoc, ruleAgentSkills, ruleReadinessRules } from './rules/rule-readiness.js';
 export { ruleDomainGlossary, ruleDomainAdr, domainReadinessRules } from './rules/domain-readiness.js';
 export {

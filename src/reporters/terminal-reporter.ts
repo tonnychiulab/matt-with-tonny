@@ -1,4 +1,33 @@
-import type { DiagnosisReport, RuleResult } from '../types.js';
+import type { DiagnosisReport, RuleResult, FixResult } from '../types.js';
+
+export function renderFixSummary(results: FixResult[]): string {
+  const lines: string[] = [];
+  const bold = (text: string) => `\x1b[1m${text}\x1b[0m`;
+  const green = (text: string) => `\x1b[32m${text}\x1b[0m`;
+  const yellow = (text: string) => `\x1b[33m${text}\x1b[0m`;
+  const red = (text: string) => `\x1b[31m${text}\x1b[0m`;
+  const cyan = (text: string) => `\x1b[36m${text}\x1b[0m`;
+
+  lines.push('');
+  lines.push(bold(cyan('── Automated Remediation Summary ─────────────────────────────')));
+
+  if (results.length === 0) {
+    lines.push('  No fixable issues found.');
+  } else {
+    for (const res of results) {
+      if (res.status === 'applied') {
+        lines.push(`  ${green('✓ [APPLIED]')} ${res.action}`);
+      } else if (res.status === 'skipped') {
+        lines.push(`  ${yellow('▲ [SKIPPED]')} ${res.action}`);
+      } else {
+        lines.push(`  ${red('✖ [FAILED] ')} ${res.action} (${res.error ?? 'unknown error'})`);
+      }
+    }
+  }
+
+  lines.push('');
+  return lines.join('\n');
+}
 
 export function renderTerminalReport(report: DiagnosisReport): string {
   const lines: string[] = [];

@@ -37,9 +37,30 @@ export function fixWorkflowLabels(
     return results;
   }
 
+  // Check if Git remote is configured
+  const gitRemoteResult = report.results.find((r) => r.ruleId === 'workflow-git-remote');
+  const hasGitRemote = gitRemoteResult?.status === 'pass';
+  if (!hasGitRemote) {
+    results.push({
+      ruleId: 'workflow-triage-labels',
+      status: 'skipped',
+      action: 'No Git remote configured to create GitHub labels.',
+    });
+    return results;
+  }
+
   // Check if gh is authenticated
   const ghAuthResult = report.results.find((r) => r.ruleId === 'workflow-gh-auth');
   const isGhAuth = ghAuthResult?.status === 'pass';
+
+  if (!isGhAuth) {
+    results.push({
+      ruleId: 'workflow-triage-labels',
+      status: 'skipped',
+      action: 'GitHub CLI not authenticated to create missing labels.',
+    });
+    return results;
+  }
 
   // Extract missing labels from message: "Missing canonical triage label(s): a, b, c."
   const match = triageResult.message.match(/Missing canonical triage label\(s\):\s*([^.]+)/);
@@ -51,15 +72,6 @@ export function fixWorkflowLabels(
     .split(',')
     .map((l) => l.trim())
     .filter(Boolean);
-
-  if (!isGhAuth) {
-    results.push({
-      ruleId: 'workflow-triage-labels',
-      status: 'skipped',
-      action: 'GitHub CLI not authenticated to create missing labels.',
-    });
-    return results;
-  }
 
   for (const label of missingLabels) {
     const spec = CANONICAL_LABELS_SPEC[label] ?? {

@@ -3,13 +3,24 @@ import { fixWorkflowLabels } from '../src/fixers/workflow-fixer.js';
 import type { DiagnosisReport } from '../src/types.js';
 
 describe('Workflow Label Fixer (Ticket #9)', () => {
-  function createReportWithMissingLabels(missingLabels: string[], isGhAuth = true): DiagnosisReport {
+  function createReportWithMissingLabels(
+    missingLabels: string[],
+    isGhAuth = true,
+    hasGitRemote = true
+  ): DiagnosisReport {
     return {
       targetPath: '/mock/project',
       timestamp: new Date().toISOString(),
       score: 70,
       summary: { pass: 5, warn: 1, fail: 0, total: 6 },
       results: [
+        {
+          ruleId: 'workflow-git-remote',
+          dimension: 'workflow',
+          title: 'Git Remote Configuration',
+          status: hasGitRemote ? 'pass' : 'fail',
+          message: hasGitRemote ? 'Configured' : 'Missing',
+        },
         {
           ruleId: 'workflow-gh-auth',
           dimension: 'workflow',
@@ -29,7 +40,7 @@ describe('Workflow Label Fixer (Ticket #9)', () => {
     };
   }
 
-  it('calls gh label create for each missing label when authenticated', () => {
+  it('calls gh label create for each missing label when authenticated and has remote', () => {
     const executedCommands: string[] = [];
     const mockExecutor = (cmd: string) => {
       executedCommands.push(cmd);
@@ -50,6 +61,17 @@ describe('Workflow Label Fixer (Ticket #9)', () => {
     expect(executedCommands[1]).toContain('gh label create ready-for-agent');
   });
 
+  it('skips label creation when git remote is not configured', () => {
+    const mockExecutor = () => ({ success: true });
+
+    const report = createReportWithMissingLabels(['needs-triage'], true, false);
+    const results = fixWorkflowLabels('/mock/project', report, mockExecutor);
+
+    expect(results).toHaveLength(1);
+    expect(results[0]?.status).toBe('skipped');
+    expect(results[0]?.action).toMatch(/No Git remote/i);
+  });
+
   it('skips label creation when GitHub CLI is not authenticated', () => {
     const executedCommands: string[] = [];
     const mockExecutor = (cmd: string) => {
@@ -57,7 +79,7 @@ describe('Workflow Label Fixer (Ticket #9)', () => {
       return { success: true };
     };
 
-    const report = createReportWithMissingLabels(['needs-triage'], false);
+    const report = createReportWithMissingLabels(['needs-triage'], false, true);
     const results = fixWorkflowLabels('/mock/project', report, mockExecutor);
 
     expect(results).toHaveLength(1);
@@ -69,7 +91,7 @@ describe('Workflow Label Fixer (Ticket #9)', () => {
   it('records failed status when gh label create returns failure', () => {
     const mockExecutor = () => ({ success: false, error: 'Network error or 404' });
 
-    const report = createReportWithMissingLabels(['needs-triage']);
+    const report = createReportWithMissingLabels(['needs-triage'], true, true);
     const results = fixWorkflowLabels('/mock/project', report, mockExecutor);
 
     expect(results).toHaveLength(1);
