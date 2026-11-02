@@ -1,6 +1,6 @@
 # Antigravity × Matt Pocock Engineering Skills 實戰：agy-doctor
 
-[![CI](https://img.shields.io/badge/tests-17%20passed-brightgreen.svg)]()
+[![CI](https://img.shields.io/badge/tests-27%20passed-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/language-TypeScript-blue.svg)]()
 [![Vitest](https://img.shields.io/badge/runner-Vitest-yellow.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -21,8 +21,14 @@
 # 診斷當前專案
 node bin/agy-doctor.js
 
+# 一鍵自動修復缺失配置（非破壞性建立缺失檔案與標籤，並自動重新診斷）
+node bin/agy-doctor.js --fix
+
 # 診斷指定專案路徑
 node bin/agy-doctor.js /path/to/project
+
+# 診斷並一鍵修復指定專案
+node bin/agy-doctor.js /path/to/project --fix
 
 # 輸出機器可讀 JSON 格式（適合 Agent 或 CI/CD 消費）
 node bin/agy-doctor.js --json
@@ -79,7 +85,8 @@ matt-with-tonny/
 ├── GLOSSARY.md                # 領域模型詞彙表
 ├── docs/
 │   ├── adr/
-│   │   └── 0001-pure-context-rule-engine.md # ADR 決策：純上下文與無副作用規則引擎
+│   │   ├── 0001-pure-context-rule-engine.md # ADR 決策：純上下文與無副作用規則引擎
+│   │   └── 0002-non-destructive-auto-fix.md # ADR 決策：非破壞性冪等修復原則
 │   └── agents/
 │       ├── issue-tracker.md   # GitHub Issues 追蹤規範
 │       ├── triage-labels.md   # 5 個標準分流角色對應
