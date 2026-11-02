@@ -1,0 +1,30 @@
+{
+  "name": "agy-doctor",
+  "version": "0.1.0",
+  "description": "Antigravity Project Readiness & Health Check CLI",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "agy-doctor": "./bin/agy-doctor.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "antigravity",
+    "cli",
+    "ai-agent",
+    "doctor",
+    "readiness"
+  ],
+  "author": "Tonny Chiu Lab",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
