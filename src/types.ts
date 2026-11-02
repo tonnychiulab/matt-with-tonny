@@ -62,3 +62,16 @@ export interface DiagnosisReport {
 export interface DiagnosisOptions {
   strict?: boolean;
 }
+
+export type FixStatus = 'applied' | 'skipped' | 'failed';
+
+export interface FixResult {
+  ruleId: string;
+  status: FixStatus;
+  action: string;
+  error?: string;
+}
+
+export interface FixOptions {
+  dryRun?: boolean;
+}

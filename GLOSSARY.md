@@ -27,3 +27,11 @@ _Avoid_: Fix, Solution, Advice
 **Readiness Score**:
 The aggregate summary representing how prepared a project is for autonomous AI Agent collaboration.
 _Avoid_: Health score, Compliance score, Grade
+
+**Fixer**:
+A deterministic, non-destructive action that safely resolves a warning or failure identified by a Rule.
+_Avoid_: Patch, Mutation, Repairer
+
+**Fix Result**:
+The outcome of executing a Fixer, indicating whether a repair was applied, skipped, or failed.
+_Avoid_: Patch result, Mutation outcome
