@@ -6,12 +6,23 @@ import type {
   Rule,
 } from './types.js';
 import { ruleReadinessRules } from './rules/rule-readiness.js';
+import { domainReadinessRules } from './rules/domain-readiness.js';
+import { workflowReadinessRules } from './rules/workflow-readiness.js';
 
 export * from './types.js';
 export { ruleAgentDoc, ruleAgentSkills, ruleReadinessRules } from './rules/rule-readiness.js';
+export { ruleDomainGlossary, ruleDomainAdr, domainReadinessRules } from './rules/domain-readiness.js';
+export {
+  ruleWorkflowGitRemote,
+  ruleWorkflowGhAuth,
+  ruleWorkflowTriageLabels,
+  workflowReadinessRules,
+} from './rules/workflow-readiness.js';
 
-const allRules: Rule[] = [
+export const allRules: Rule[] = [
   ...ruleReadinessRules,
+  ...domainReadinessRules,
+  ...workflowReadinessRules,
 ];
 
 export function runDiagnosis(
