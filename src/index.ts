@@ -8,6 +8,7 @@ import type {
 import { ruleReadinessRules } from './rules/rule-readiness.js';
 import { domainReadinessRules } from './rules/domain-readiness.js';
 import { workflowReadinessRules } from './rules/workflow-readiness.js';
+import { createDeclarativeRule } from './rules/declarative.js';
 
 export * from './types.js';
 export { collectProjectContext } from './collector.js';
@@ -35,7 +36,33 @@ export function runDiagnosis(
   context: ProjectContext,
   _options?: DiagnosisOptions
 ): DiagnosisReport {
-  const results = allRules.map((rule) => rule.check(context));
+  const overrides = context.config?.overrides ?? {};
+
+  // 1. Base rules + custom declarative rules
+  const customRules: Rule[] = (context.config?.rules ?? []).map((r) =>
+    createDeclarativeRule(r)
+  );
+
+  const candidateRules = [...allRules, ...customRules];
+
+  // 2. Filter out disabled rules
+  const activeRules = candidateRules.filter((rule) => {
+    const override = overrides[rule.id];
+    return override?.enabled !== false;
+  });
+
+  // 3. Execute active rules & apply severity overrides
+  const results = activeRules.map((rule) => {
+    const result = rule.check(context);
+    const override = overrides[rule.id];
+    if (override?.severity && result.status !== 'pass') {
+      return {
+        ...result,
+        status: override.severity,
+      };
+    }
+    return result;
+  });
 
   const summary: DiagnosisSummary = {
     pass: results.filter((r) => r.status === 'pass').length,
@@ -56,5 +83,6 @@ export function runDiagnosis(
     score,
     summary,
     results,
+    configWarning: context.configWarning,
   };
 }

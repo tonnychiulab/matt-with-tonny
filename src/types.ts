@@ -89,6 +89,7 @@ export interface DiagnosisReport {
   score: number;
   summary: DiagnosisSummary;
   results: RuleResult[];
+  configWarning?: string;
 }
 
 export interface DiagnosisOptions {
