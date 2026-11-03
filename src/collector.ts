@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execSync } from 'node:child_process';
 import type { ProjectContext, AgentDocContext, DomainContext, WorkflowContext } from './types.js';
+import { loadConfig } from './config.js';
 
 function safeExec(command: string, cwd: string): { success: boolean; stdout: string } {
   try {
@@ -17,8 +18,13 @@ function safeExec(command: string, cwd: string): { success: boolean; stdout: str
   }
 }
 
-export async function collectProjectContext(targetDir: string): Promise<ProjectContext> {
+export async function collectProjectContext(
+  targetDir: string,
+  options?: { configPath?: string }
+): Promise<ProjectContext> {
   const resolvedPath = path.resolve(targetDir);
+
+  const configResult = loadConfig(options?.configPath, resolvedPath);
 
   if (!fs.existsSync(resolvedPath) || !fs.statSync(resolvedPath).isDirectory()) {
     return {
@@ -36,6 +42,8 @@ export async function collectProjectContext(targetDir: string): Promise<ProjectC
         isGhAuthenticated: false,
         triageLabels: [],
       },
+      config: configResult.config,
+      configWarning: configResult.warning,
     };
   }
 
@@ -122,5 +130,7 @@ export async function collectProjectContext(targetDir: string): Promise<ProjectC
     agentDoc,
     domain,
     workflow,
+    config: configResult.config,
+    configWarning: configResult.warning,
   };
 }

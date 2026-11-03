@@ -2,6 +2,35 @@ export type ReadinessDimension = 'rule' | 'domain' | 'workflow';
 
 export type RuleStatus = 'pass' | 'warn' | 'fail';
 
+export type DeclarativePattern = 'file-exists' | 'content-matches' | 'file-not-exists';
+
+export interface DeclarativeRuleConfig {
+  id: string;
+  dimension?: ReadinessDimension;
+  title: string;
+  pattern: DeclarativePattern;
+  path: string;
+  match?: string;
+  severity?: 'fail' | 'warn';
+  remediation?: string;
+}
+
+export interface RuleOverrideConfig {
+  enabled?: boolean;
+  severity?: RuleStatus;
+}
+
+export interface ProjectConfig {
+  rules?: DeclarativeRuleConfig[];
+  overrides?: Record<string, RuleOverrideConfig>;
+}
+
+export interface ConfigLoadResult {
+  config: ProjectConfig;
+  source?: string;
+  warning?: string;
+}
+
 export interface RuleResult {
   ruleId: string;
   dimension: ReadinessDimension;
@@ -42,6 +71,8 @@ export interface ProjectContext {
   agentDoc: AgentDocContext;
   domain: DomainContext;
   workflow: WorkflowContext;
+  config?: ProjectConfig;
+  configWarning?: string;
 }
 
 export interface DiagnosisSummary {
