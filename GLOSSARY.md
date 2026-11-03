@@ -35,3 +35,15 @@ _Avoid_: Patch, Mutation, Repairer
 **Fix Result**:
 The outcome of executing a Fixer, indicating whether a repair was applied, skipped, or failed.
 _Avoid_: Patch result, Mutation outcome
+
+**Project Configuration**:
+A declarative configuration file (`.agydoctorrc.json`) that specifies custom rules, rule overrides, and project-specific diagnostic settings.
+_Avoid_: Config file, Options, Preferences
+
+**Declarative Rule**:
+A user-defined Rule specified via configuration patterns rather than executable code, evaluated purely against the Project Context.
+_Avoid_: Custom rule script, Dynamic rule, Plugin check
+
+**Rule Override**:
+A configuration directive that modifies the enabled state or severity of an existing Rule.
+_Avoid_: Rule tweak, Rule mute, Severity patch
