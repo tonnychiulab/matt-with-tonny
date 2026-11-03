@@ -45,6 +45,9 @@ export function renderTerminalReport(report: DiagnosisReport): string {
   lines.push(bold(cyan('╰─────────────────────────────────────────────────────────────╯')));
   lines.push('');
   lines.push(`Target: ${report.targetPath}`);
+  if (report.configWarning) {
+    lines.push(yellow(`▲ Configuration Warning: ${report.configWarning}`));
+  }
   lines.push(
     `Readiness Score: ${bold(
       report.score >= 80 ? green(`${report.score}/100`) : report.score >= 50 ? yellow(`${report.score}/100`) : red(`${report.score}/100`)

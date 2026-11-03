@@ -1,6 +1,6 @@
 # Antigravity × Matt Pocock Engineering Skills 實戰：agy-doctor
 
-[![CI](https://img.shields.io/badge/tests-27%20passed-brightgreen.svg)]()
+[![CI](https://img.shields.io/badge/tests-52%20passed-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/language-TypeScript-blue.svg)]()
 [![Vitest](https://img.shields.io/badge/runner-Vitest-yellow.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -27,6 +27,9 @@ node bin/agy-doctor.js --fix
 # 診斷指定專案路徑
 node bin/agy-doctor.js /path/to/project
 
+# 使用自訂配置檔（例如共用規則或 Monorepo 規範）
+node bin/agy-doctor.js --config ./custom-config.json
+
 # 診斷並一鍵修復指定專案
 node bin/agy-doctor.js /path/to/project --fix
 
@@ -48,6 +51,63 @@ node bin/agy-doctor.js --strict
 | **Workflow** | `workflow-git-remote` | 是否已關聯 Git Remote Origin | 提示執行 `git remote add origin` |
 | **Workflow** | `workflow-gh-auth` | GitHub CLI (`gh`) 是否已登入認證 | 提示執行 `gh auth login` |
 | **Workflow** | `workflow-triage-labels` | 是否具備 5 個標準分流標籤 | 自動產出對應的 `gh label create` 指令 |
+
+---
+
+## ⚙️ 專案客製化配置與自訂宣告式規則 (`.agydoctorrc.json`)
+
+專案可於根目錄放置 `.agydoctorrc.json`（或透過 `--config <path>` 指定路徑），擴充團隊自訂規則或覆寫內建檢查設定：
+
+```json
+{
+  "rules": [
+    {
+      "id": "custom-contributing",
+      "dimension": "rule",
+      "title": "團隊貢獻指引檢查",
+      "pattern": "file-exists",
+      "path": "CONTRIBUTING.md",
+      "severity": "fail",
+      "remediation": "請依據團隊模板建立 CONTRIBUTING.md"
+    },
+    {
+      "id": "security-contact",
+      "dimension": "domain",
+      "title": "資安回報信箱驗證",
+      "pattern": "content-matches",
+      "path": "SECURITY.md",
+      "match": "security@company\\.com",
+      "remediation": "請於 SECURITY.md 填入官方資安信箱 security@company.com"
+    },
+    {
+      "id": "disallow-env-local",
+      "dimension": "workflow",
+      "title": "禁止本地環境檔案提交",
+      "pattern": "file-not-exists",
+      "path": ".env.local",
+      "severity": "fail",
+      "remediation": "請移除 .env.local 並加入 .gitignore"
+    }
+  ],
+  "overrides": {
+    "rule-agent-skills": {
+      "enabled": false
+    },
+    "domain-adr": {
+      "severity": "warn"
+    }
+  }
+}
+```
+
+### 支援的宣告式模式 (Declarative Patterns)
+- **`file-exists`**：檢查目標檔案是否存在。
+- **`file-not-exists`**：禁止特定檔案（如密鑰或本地設定）存在於專案中。
+- **`content-matches`**：檢查目標檔案內容是否包含關鍵字或匹配正規表達式。
+
+### 規則覆寫 (Overrides)
+- **`enabled: false`**：關閉指定規則，不列入診斷報表且不計分。
+- **`severity: 'warn' | 'fail'`**：調整規則失敗時的嚴重等級。
 
 ---
 
@@ -86,7 +146,8 @@ matt-with-tonny/
 ├── docs/
 │   ├── adr/
 │   │   ├── 0001-pure-context-rule-engine.md # ADR 決策：純上下文與無副作用規則引擎
-│   │   └── 0002-non-destructive-auto-fix.md # ADR 決策：非破壞性冪等修復原則
+│   │   ├── 0002-non-destructive-auto-fix.md # ADR 決策：非破壞性冪等修復原則
+│   │   └── 0003-declarative-configuration-custom-rules.md # ADR 決策：宣告式自訂規則優於可執行外掛程式
 │   └── agents/
 │       ├── issue-tracker.md   # GitHub Issues 追蹤規範
 │       ├── triage-labels.md   # 5 個標準分流角色對應
