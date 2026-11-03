@@ -10,8 +10,10 @@
   },
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run --no-cache",
-    "test:watch": "vitest"
+    "test:watch": "vitest --no-cache",
+    "check": "npm run typecheck && npm test"
   },
   "keywords": [
     "antigravity",

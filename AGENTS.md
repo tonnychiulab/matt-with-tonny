@@ -13,3 +13,10 @@ Canonical five-role triage labels. See `docs/agents/triage-labels.md`.
 ### Domain docs
 
 Single-context layout (`GLOSSARY.md` + `docs/adr/`). See `docs/agents/domain.md`.
+
+### Verification
+
+- Typecheck: `npm run typecheck`
+- Test: `npm test`
+- Full check: `npm run check`
+- Build: `npm run build`
