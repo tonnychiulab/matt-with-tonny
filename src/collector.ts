@@ -30,6 +30,7 @@ export async function collectProjectContext(
     return {
       targetPath: resolvedPath,
       files: [],
+      fileContents: {},
       agentDoc: {
         hasSkillsSection: false,
       },
@@ -124,9 +125,34 @@ export async function collectProjectContext(
     triageLabels,
   };
 
+  const fileContents: Record<string, string> = {};
+  if (candidateDoc && agentDoc.content) {
+    fileContents[candidateDoc] = agentDoc.content;
+  }
+
+  if (configResult.config.rules) {
+    for (const rule of configResult.config.rules) {
+      if (!rule.path) continue;
+      const filePath = path.resolve(resolvedPath, rule.path);
+      if (fs.existsSync(filePath)) {
+        if (!entries.includes(rule.path)) {
+          entries.push(rule.path);
+        }
+        if (rule.pattern === 'content-matches') {
+          try {
+            fileContents[rule.path] = fs.readFileSync(filePath, 'utf-8');
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
+  }
+
   return {
     targetPath: resolvedPath,
     files: entries,
+    fileContents,
     agentDoc,
     domain,
     workflow,

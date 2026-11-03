@@ -13,6 +13,7 @@ export * from './types.js';
 export { collectProjectContext } from './collector.js';
 export { loadConfig } from './config.js';
 export { runFix } from './fixer.js';
+export { createDeclarativeRule } from './rules/declarative.js';
 export { fixFilesystemIssues } from './fixers/filesystem-fixer.js';
 export { fixWorkflowLabels } from './fixers/workflow-fixer.js';
 export { ruleAgentDoc, ruleAgentSkills, ruleReadinessRules } from './rules/rule-readiness.js';

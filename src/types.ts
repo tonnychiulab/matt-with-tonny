@@ -68,6 +68,7 @@ export interface WorkflowContext {
 export interface ProjectContext {
   targetPath: string;
   files: string[];
+  fileContents?: Record<string, string>;
   agentDoc: AgentDocContext;
   domain: DomainContext;
   workflow: WorkflowContext;
